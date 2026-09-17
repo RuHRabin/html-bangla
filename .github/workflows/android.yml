@@ -43,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
 
     steps:
       - name: Checkout repository
@@ -62,12 +64,12 @@ jobs:
       # release APK is properly signed. If this secret is not configured,
       # the build still succeeds and falls back to debug signing.
       - name: Decode signing keystore
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: ${{ env.HAS_KEYSTORE == 'true' }}
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > release.keystore
 
       - name: Build release APK
         env:
-          KEYSTORE_PATH: ${{ secrets.KEYSTORE_BASE64 != '' && format('{0}/release.keystore', github.workspace) || '' }}
+          KEYSTORE_PATH: ${{ env.HAS_KEYSTORE == 'true' && format('{0}/release.keystore', github.workspace) || '' }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
