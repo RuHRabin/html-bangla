@@ -26,7 +26,7 @@ android {
     // project still builds out of the box for anyone who clones it.
     create("release") {
       val keystorePath = System.getenv("KEYSTORE_PATH")
-      if (keystorePath != null) {
+      if (!keystorePath.isNullOrEmpty()) {
         storeFile = file(keystorePath)
         storePassword = System.getenv("STORE_PASSWORD")
         keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
@@ -40,7 +40,7 @@ android {
       isCrunchPngs = false
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = if (System.getenv("KEYSTORE_PATH") != null) {
+      signingConfig = if (!System.getenv("KEYSTORE_PATH").isNullOrEmpty()) {
         signingConfigs.getByName("release")
       } else {
         signingConfigs.getByName("debug")
